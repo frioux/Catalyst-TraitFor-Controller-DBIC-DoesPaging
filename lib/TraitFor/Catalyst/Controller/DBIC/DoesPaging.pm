@@ -118,179 +118,166 @@ minimum of effort and thought.
 
 =head1 METHODS
 
+All methods take the context and a ResultSet as their arguments.  All methods
+return a ResultSet.
+
 =head2 page_and_sort
 
-  my $result = $self->page_and_sort($c, $c->model('DB::Foo'));
+ my $result = $self->page_and_sort($c, $c->model('DB::Foo'));
 
-=head3 Description
-
-This is a helper method that will first sort your data and then paginate it.
-Returns a resultset.
+This is a helper method that will first C<sort> your data and then C<paginate>
+it.
 
 =head2 paginate
 
-  my $result = $self->paginate($c, $c->model('DB::Foo'));
-
-=head3 Description
+ my $result = $self->paginate($c, $c->model('DB::Foo'));
 
 Paginates the passed in resultset based on the following CGI parameters:
 
-  start - first row to display
-  limit - amount of rows per page
-
-Returns a resultset.
+ start - first row to display
+ limit - amount of rows per page
 
 =head2 search
 
-  my $searched_rs = $self->search($c, $c->model('DB::Foo'));
-
-=head3 Description
+ my $searched_rs = $self->search($c, $c->model('DB::Foo'));
 
 Calls the controller_search method on the passed in resultset with all of the
 CGI parameters.  I like to have this look something like the following:
 
-   # Base search dispatcher, defined in MyApp::Schema::ResultSet
-   sub _build_search {
-      my $self           = shift;
-      my $dispatch_table = shift;
-      my $q              = shift;
+ # Base search dispatcher, defined in MyApp::Schema::ResultSet
+ sub _build_search {
+    my $self           = shift;
+    my $dispatch_table = shift;
+    my $q              = shift;
 
-      my %search = ();
-      my %meta   = ();
+    my %search = ();
+    my %meta   = ();
 
-      foreach ( keys %{$q} ) {
-         if ( my $fn = $dispatch_table->{$_} and $q->{$_} ) {
-            my ( $tmp_search, $tmp_meta ) = $fn->( $q->{$_} );
-            %search = ( %search, %{$tmp_search} );
-            %meta   = ( %meta,   %{$tmp_meta} );
-         }
-      }
+    foreach ( keys %{$q} ) {
+       if ( my $fn = $dispatch_table->{$_} and $q->{$_} ) {
+          my ( $tmp_search, $tmp_meta ) = $fn->( $q->{$_} );
+          %search = ( %search, %{$tmp_search} );
+          %meta   = ( %meta,   %{$tmp_meta} );
+       }
+    }
 
-      return $self->search(\%search, \%meta);
-   }
+    return $self->search(\%search, \%meta);
+ }
 
-   # search method in specific resultset
-   sub controller_search {
-      my $self   = shift;
-      my $params = shift;
-      return $self->_build_search({
-            status => sub {
-               return { 'repair_order_status' => shift }, {};
-            },
-            part_id => sub {
-               return {
-                  'lineitems.part_id' => { -like => q{%}.shift( @_ ).q{%} }
-               }, { join => 'lineitems' };
-            },
-            serial => sub {
-               return {
-                  'lineitems.serial' => { -like => q{%}.shift( @_ ).q{%} }
-               }, { join => 'lineitems' };
-            },
-            id => sub {
-               return { 'id' => shift }, {};
-            },
-            customer_id => sub {
-               return { 'customer_id' => shift }, {};
-            },
-            repair_order_id => sub {
-               return {
-                  'repair_order_id' => { -like => q{%}.shift( @_ ).q{%} }
-               }, {};
-            },
-         },$params
-      );
-   }
+ # search method in specific resultset
+ sub controller_search {
+    my $self   = shift;
+    my $params = shift;
+    return $self->_build_search({
+          status => sub {
+             return { 'repair_order_status' => shift }, {};
+          },
+          part_id => sub {
+             return {
+                'lineitems.part_id' => { -like => q{%}.shift( @_ ).q{%} }
+             }, { join => 'lineitems' };
+          },
+          serial => sub {
+             return {
+                'lineitems.serial' => { -like => q{%}.shift( @_ ).q{%} }
+             }, { join => 'lineitems' };
+          },
+          id => sub {
+             return { 'id' => shift }, {};
+          },
+          customer_id => sub {
+             return { 'customer_id' => shift }, {};
+          },
+          repair_order_id => sub {
+             return {
+                'repair_order_id' => { -like => q{%}.shift( @_ ).q{%} }
+             }, {};
+          },
+       },$params
+    );
+ }
 
 =head2 sort
 
-  my $result = $self->sort($c, $c->model('DB::Foo'));
-
-=head3 Description
+ my $result = $self->sort($c, $c->model('DB::Foo'));
 
 Exactly the same as search, except calls controller_sort.  Here is how I use it:
 
-   # Base sort dispatcher, defined in MyApp::Schema::ResultSet
-   sub _build_sort {
-      my $self = shift;
-      my $dispatch_table = shift;
-      my $default = shift;
-      my $q = shift;
+ # Base sort dispatcher, defined in MyApp::Schema::ResultSet
+ sub _build_sort {
+    my $self = shift;
+    my $dispatch_table = shift;
+    my $default = shift;
+    my $q = shift;
 
-      my %search = ();
-      my %meta   = ();
+    my %search = ();
+    my %meta   = ();
 
-      my $direction = $q->{dir};
-      my $sort      = $q->{sort};
+    my $direction = $q->{dir};
+    my $sort      = $q->{sort};
 
-      if ( my $fn = $dispatch_table->{$sort} ) {
-         my ( $tmp_search, $tmp_meta ) = $fn->( $direction );
-         %search = ( %search, %{$tmp_search} );
-         %meta   = ( %meta,   %{$tmp_meta} );
-      } elsif ( $sort && $direction ) {
-         my ( $tmp_search, $tmp_meta ) = $default->( $sort, $direction );
-         %search = ( %search, %{$tmp_search} );
-         %meta   = ( %meta,   %{$tmp_meta} );
-      }
+    if ( my $fn = $dispatch_table->{$sort} ) {
+       my ( $tmp_search, $tmp_meta ) = $fn->( $direction );
+       %search = ( %search, %{$tmp_search} );
+       %meta   = ( %meta,   %{$tmp_meta} );
+    } elsif ( $sort && $direction ) {
+       my ( $tmp_search, $tmp_meta ) = $default->( $sort, $direction );
+       %search = ( %search, %{$tmp_search} );
+       %meta   = ( %meta,   %{$tmp_meta} );
+    }
 
-      return $self->search(\%search, \%meta);
-   }
+    return $self->search(\%search, \%meta);
+ }
 
-   # sort method in specific resultset
-   sub controller_sort {
-      my $self = shift;
-      my $params = shift;
-      return $self->_build_sort({
-           first_name => sub {
-              my $direction = shift;
-              return {}, {
-                 order_by => { "-$direction" => [qw{last_name first_name}] },
-              };
-           },
-         }, sub {
-        my $param = shift;
-        my $direction = shift;
-        return {}, {
-           order_by => { "-$direction" => $param },
-        };
-         },$params
-      );
-   }
+ # sort method in specific resultset
+ sub controller_sort {
+    my $self = shift;
+    my $params = shift;
+    return $self->_build_sort({
+         first_name => sub {
+            my $direction = shift;
+            return {}, {
+               order_by => { "-$direction" => [qw{last_name first_name}] },
+            };
+         },
+       }, sub {
+      my $param = shift;
+      my $direction = shift;
+      return {}, {
+         order_by => { "-$direction" => $param },
+      };
+       },$params
+    );
+ }
 
 =head2 simple_deletion
 
-  $self->simple_deletion($c, $c->model('DB::Foo'));
-
-=head3 Description
+ $self->simple_deletion($c, $c->model('DB::Foo'));
 
 Deletes from the passed in resultset based on the following CGI parameter:
 
-  to_delete - values of the ids of items to delete
+ to_delete - values of the ids of items to delete
 
-=head3 Valid arguments are:
-
-  rs - resultset loaded into schema
+This is the only method that does not return a ResultSet.  Instead it returns an
+arrayref of the id's that it deleted.
 
 Note that this method uses the $rs->delete method, as opposed to $rs->delete_all
 
 =head2 simple_search
 
-  my $searched_rs = $self->simple_search($c, $c->model('DB::Foo'));
+ my $searched_rs = $self->simple_search($c, $c->model('DB::Foo'));
 
-=head3 Valid arguments are:
-
-  rs - source loaded into schema
+Searches rs based on all fields in the request, except for fields listed in
+C<ignored_params>.  Searches with fieldname => { -like => "%$value%" }.
 
 =head2 simple_sort
 
-  my $sorted_rs = $self->simple_sort($c, $c->model('DB::Foo'));
-
-=head3 Description
+ my $sorted_rs = $self->simple_sort($c, $c->model('DB::Foo'));
 
 Sorts the passed in resultset based on the following CGI parameters:
 
-  sort - field to sort by, defaults to primarky key
-  dir  - direction to sort
+ sort - field to sort by, defaults to primarky key
+ dir  - direction to sort
 
 =head1 CONFIG VARIABLES
 
