@@ -8,7 +8,7 @@ has ignored_params => (
    default => sub { [qw{limit start sort dir _dc rm xaction}] },
 );
 
-has pages => (
+has page_size => (
    is => 'ro',
    isa => 'Int',
    default => 25,
@@ -25,7 +25,7 @@ sub page_and_sort {
 sub paginate {
    my ($self, $c, $resultset) = @_;
    # param names should be configurable
-   my $rows = $c->request->params->{limit} || $self->pages;
+   my $rows = $c->request->params->{limit} || $self->page_size;
    my $page =
       $c->request->params->{start}
       ? ( $c->request->params->{start} / $rows + 1 )
@@ -289,6 +289,22 @@ Sorts the passed in resultset based on the following CGI parameters:
 
   sort - field to sort by, defaults to primarky key
   dir  - direction to sort
+
+=head1 CONFIG VARIABLES
+
+=over 4
+
+=item page_size
+
+Default size of a page.  Defaults to 25.
+
+=item ignored_params
+
+ArrayRef of params that will be ignored in simple_search, defaults to:
+
+ [qw{limit start sort dir _dc rm xaction}]
+
+=back
 
 =head1 CREDITS
 
