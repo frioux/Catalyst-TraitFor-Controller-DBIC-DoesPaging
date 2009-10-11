@@ -24,8 +24,7 @@ $schema->populate(Stations => [
    [qw{8  groovy  station   }],
    [qw{9  wicked  out       }],
 ]);
-use Data::Dump 'pp';
-my $t1_obj;
+
 # page_and_sort
 {
    my $data = from_json(get('/test_page_and_sort?limit=3&dir=asc&sort=bill'));
