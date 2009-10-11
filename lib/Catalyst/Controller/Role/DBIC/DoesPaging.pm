@@ -1,5 +1,7 @@
 package Catalyst::Controller::Role::DBIC::DoesPaging;
 
+# ABSTRACT: Helps you paginate, search, sort, and more easily using DBIx::Class
+
 use Moose::Role;
 
 has ignored_params => (
@@ -45,7 +47,7 @@ sub search {
 
 sub sort {
    my ($self, $c, $rs) = @_;
-   my $q       = $c->request->params;
+   my $q = $c->request->params;
    return $rs->controller_sort($q);
 }
 
@@ -118,7 +120,7 @@ minimum of effort and thought.
 
 =head2 page_and_sort
 
-  my $result = $self->page_and_sort($c->model('DB::Foo'));
+  my $result = $self->page_and_sort($c, $c->model('DB::Foo'));
 
 =head3 Description
 
@@ -127,7 +129,7 @@ Returns a resultset.
 
 =head2 paginate
 
-  my $result = $self->paginate($c->model('DB::Foo'));
+  my $result = $self->paginate($c, $c->model('DB::Foo'));
 
 =head3 Description
 
@@ -140,7 +142,7 @@ Returns a resultset.
 
 =head2 search
 
-  my $searched_rs = $self->search($c->model('DB::Foo'));
+  my $searched_rs = $self->search($c, $c->model('DB::Foo'));
 
 =head3 Description
 
@@ -202,7 +204,7 @@ CGI parameters.  I like to have this look something like the following:
 
 =head2 sort
 
-  my $result = $self->sort($c->model('DB::Foo'));
+  my $result = $self->sort($c, $c->model('DB::Foo'));
 
 =head3 Description
 
@@ -257,7 +259,7 @@ Exactly the same as search, except calls controller_sort.  Here is how I use it:
 
 =head2 simple_deletion
 
-  $self->simple_deletion($c->model('DB::Foo'));
+  $self->simple_deletion($c, $c->model('DB::Foo'));
 
 =head3 Description
 
@@ -273,7 +275,7 @@ Note that this method uses the $rs->delete method, as opposed to $rs->delete_all
 
 =head2 simple_search
 
-  my $searched_rs = $self->simple_search($c->model('DB::Foo'));
+  my $searched_rs = $self->simple_search($c, $c->model('DB::Foo'));
 
 =head3 Valid arguments are:
 
@@ -281,7 +283,7 @@ Note that this method uses the $rs->delete method, as opposed to $rs->delete_all
 
 =head2 simple_sort
 
-  my $sorted_rs = $self->simple_sort($c->model('DB::Foo'));
+  my $sorted_rs = $self->simple_sort($c, $c->model('DB::Foo'));
 
 =head3 Description
 
