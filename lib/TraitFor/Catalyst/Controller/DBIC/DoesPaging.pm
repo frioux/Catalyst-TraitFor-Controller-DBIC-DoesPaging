@@ -1,4 +1,4 @@
-package Catalyst::Controller::Role::DBIC::DoesPaging;
+package TraitFor::Catalyst::Controller::DBIC::DoesPaging;
 
 # ABSTRACT: Helps you paginate, search, sort, and more easily using DBIx::Class
 

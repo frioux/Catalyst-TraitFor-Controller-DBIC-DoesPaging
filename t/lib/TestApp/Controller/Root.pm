@@ -2,7 +2,7 @@ package TestApp::Controller::Root;
 
 use Moose;
 BEGIN { extends 'Catalyst::Controller' };
- with 'Catalyst::Controller::Role::DBIC::DoesPaging';
+ with 'TraitFor::Catalyst::Controller::DBIC::DoesPaging';
 
 __PACKAGE__->config->{namespace} = '';
 
