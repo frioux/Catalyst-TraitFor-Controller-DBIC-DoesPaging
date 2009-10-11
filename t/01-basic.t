@@ -85,7 +85,7 @@ my $t1_obj;
 {
    cmp_bag [map $_->id, $schema->resultset('Stations')->all] => [1..9], 'values are not deleted';
    my $data = from_json(get('/test_simple_deletion?'.join q{&}, map "to_delete=$_", 1,2,3 ));
-   cmp_bag @{$data} => [1,2,3], 'values appear to be deleted';
+   cmp_bag $data => [1,2,3], 'values appear to be deleted';
    cmp_bag [map $_->id, $schema->resultset('Stations')->all] => [4..9], 'values are deleted';
 }
 

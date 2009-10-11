@@ -52,12 +52,9 @@ sub sort {
 sub simple_deletion {
    my ($self, $c, $rs) = @_;
    # param names should be configurable
-   my @to_delete = $c->request->params->{to_delete} or croak 'Required cgi parameter (to_delete) undefined!';
-   use Data::Dump 'pp';
-   pp @to_delete;
-   $rs->search({ id => { -in => \@to_delete } })->delete();
-   pp map $_->id, $rs->all;
-   return \@to_delete;
+   my $to_delete = $c->request->params->{to_delete} or croak 'Required cgi parameter (to_delete) undefined!';
+   $rs->search({ id => { -in => $to_delete } })->delete();
+   return $to_delete;
 }
 
 sub simple_search {
