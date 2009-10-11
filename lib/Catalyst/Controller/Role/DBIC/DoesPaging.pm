@@ -1,4 +1,4 @@
-package Catalyst::Controller::DBIC::DoesPaging;
+package Catalyst::Controller::Role::DBIC::DoesPaging;
 
 use Moose::Role;
 
