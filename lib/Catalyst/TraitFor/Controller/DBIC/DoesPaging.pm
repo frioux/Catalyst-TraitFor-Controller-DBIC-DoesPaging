@@ -1,4 +1,4 @@
-package TraitFor::Catalyst::Controller::DBIC::DoesPaging;
+package Catalyst::TraitFor::Controller::DBIC::DoesPaging;
 
 # ABSTRACT: Helps you paginate, search, sort, and more easily using DBIx::Class
 
@@ -97,7 +97,7 @@ sub simple_sort {
  package MyApp::Controller::Foo;
  use Moose;
  BEGIN { extends 'Catalyst::Controller' }
- with 'Catalyst::Controller::Role::DBIC::DoesPaging';
+ with 'Catalyst::TraitFor::Controller::DBIC::DoesPaging';
 
  sub people {
     my ($self, $c) = @_;
