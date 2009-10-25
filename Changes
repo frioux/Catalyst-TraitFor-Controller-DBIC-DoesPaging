@@ -1,5 +1,8 @@
 Revision history for TraitFor-Catalyst-Controller-DBIC-DoesPaging
 
+0.092980 Sun Oct 25 00:57:00 CDT 2009
+       - Fix dependencies
+
 0.092970 Sat Oct 24 02:47:00 CDT 2009
        - Initial Release
 
