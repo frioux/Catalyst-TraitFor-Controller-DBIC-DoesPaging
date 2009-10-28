@@ -25,16 +25,15 @@ $schema->populate(Stations => [
    [qw{9  wicked  out       }],
 ]);
 
-# page_and_sort
-{
+page_and_sort: {
    my $data = from_json(get('/test_page_and_sort?limit=3&dir=asc&sort=bill'));
    cmp_ok scalar @{$data}, '<=', 3, 'page_and_sort correctly pages';
    cmp_deeply [map $_->{bill}, @{$data}],
               [sort map $_->{bill}, @{$data}],
 	      'page_and_sort correctly sorts';
 }
-# paginate
-{
+
+paginate: {
    my $data = from_json(get('/test_paginate?limit=3'));
    cmp_ok scalar @{$data}, '<=', 3,
       'paginate gave the correct amount of results';
@@ -46,27 +45,27 @@ $schema->populate(Stations => [
       'pages do not intersect';
 }
 
-# search
-{
+search: {
    my $data = from_json(get('/test_search'));
    cmp_deeply [map $_->{id}, @{$data}], [3], q{controller_search get's called by search};
 }
 
-# sort
-{
+sort: {
    my $data = from_json(get('/test_sort'));
    cmp_deeply [map $_->{bill}, @{$data}], [sort map $_->{bill}, @{$data}], q{controller_sort get's called by sort};
 }
 
-# simple_search
-{
+simple_search: {
    my $data = from_json(get('/test_simple_search?bill=oo'));
    is scalar(grep { $_->{bill} =~ m/oo/ } @{$data}),
       scalar(@{$data}), 'simple search found the right results';
+
+   $data = from_json(get('/test_simple_search?bill=oo&bill=ubu'));
+   is scalar(grep { $_->{bill} =~ m/oo|ubu/ } @{$data}),
+      scalar(@{$data}), 'simple search found the right results';
 }
 
-# simple_sort
-{
+simple_sort: {
    my $data = from_json(get('/test_simple_sort'));
    cmp_deeply [map $_->{id}, @{$data}], [1..9], 'default sort is id';
 
@@ -80,8 +79,7 @@ $schema->populate(Stations => [
 	      'alternate sort works';
 }
 
-# simple_deletion
-{
+simple_deletion: {
    cmp_bag [map $_->id, $schema->resultset('Stations')->all] => [1..9], 'values are not deleted';
    my $data = from_json(get('/test_simple_deletion?'.join q{&}, map "to_delete=$_", 1,2,3 ));
    cmp_bag $data => [1,2,3], 'values appear to be deleted';

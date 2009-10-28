@@ -66,7 +66,7 @@ sub simple_search {
    foreach ( keys %{ $c->request->params } ) {
       if ( $c->request->params->{$_} and not $skips{$_} ) {
          # should be configurable
-         $searches->{$_} = { like => q{%} . $c->request->params->{$_} . q{%} };
+         $searches->{$_} = { like => [map "%$_%", $c->request->param($_)] };
       }
    }
 
@@ -268,7 +268,8 @@ Note that this method uses the $rs->delete method, as opposed to $rs->delete_all
  my $searched_rs = $self->simple_search($c, $c->model('DB::Foo'));
 
 Searches rs based on all fields in the request, except for fields listed in
-C<ignored_params>.  Searches with fieldname => { -like => "%$value%" }.
+C<ignored_params>.  Searches with fieldname => { -like => "%$value%" }. If there are
+multiple values for a CGI parameter it will use all values via an C<or>.
 
 =head2 simple_sort
 

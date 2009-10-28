@@ -1,5 +1,9 @@
 Revision history for TraitFor-Catalyst-Controller-DBIC-DoesPaging
 
+0.093010 Wed Oct 27 00:20:00 CDT 2009
+       - Add basic code for multple values for a single CGI Parameter
+         in simple_search
+
 0.092980 Sun Oct 25 00:57:00 CDT 2009
        - Fix dependencies
 
