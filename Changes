@@ -1,4 +1,6 @@
-Revision history for TraitFor-Catalyst-Controller-DBIC-DoesPaging
+Revision history for Catalyst-TraitFor-Controller-DBIC-DoesPaging
+
+       - Rename dist because I'm THAT dumb
 
 0.093010 Wed Oct 27 00:20:00 CDT 2009
        - Add basic code for multple values for a single CGI Parameter
