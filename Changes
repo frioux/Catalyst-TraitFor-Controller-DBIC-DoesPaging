@@ -1,8 +1,9 @@
 Revision history for Catalyst-TraitFor-Controller-DBIC-DoesPaging
 
+0.093020 Thu Oct 29 19:16:00 CDT 2009
        - Rename dist because I'm THAT dumb
 
-0.093010 Wed Oct 27 00:20:00 CDT 2009
+0.093010 Wed Oct 28 00:20:00 CDT 2009
        - Add basic code for multple values for a single CGI Parameter
          in simple_search
 
