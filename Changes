@@ -1,5 +1,10 @@
 Revision history for Catalyst-TraitFor-Controller-DBIC-DoesPaging
 
+       - Fix required Catalyst version
+
+0.093050 Sun Nov 01 01:09:00 CDT 2009
+       - Add build_dep
+
 0.093020 Thu Oct 29 19:16:00 CDT 2009
        - Rename dist because I'm THAT dumb
 
