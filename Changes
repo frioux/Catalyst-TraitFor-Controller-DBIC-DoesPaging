@@ -1,5 +1,7 @@
 Revision history for Catalyst-TraitFor-Controller-DBIC-DoesPaging
 
+0.093200 Mon Nov 16 21:08:00 CDT 2009
+       - Fix required version for Catalyst::Model::DBIC::Schema
        - Fix required Catalyst version
 
 0.093050 Sun Nov 01 01:09:00 CDT 2009
