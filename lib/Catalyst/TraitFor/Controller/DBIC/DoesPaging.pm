@@ -77,11 +77,17 @@ sub simple_search {
 
 sub simple_sort {
    my ($self, $c, $rs) = @_;
-   my %order_by = ( order_by => [ $rs->result_source->primary_columns ] );
+   my %order_by = (
+      order_by => [
+         map $rs->current_source_alias.q{.}.$_,
+         $rs->result_source->primary_columns
+      ]
+   );
    if ( $c->request->params->{sort} ) {
       %order_by = (
          order_by => {
-            q{-}.$c->request->params->{dir} => $c->request->params->{sort}
+            q{-}.$c->request->params->{dir} =>
+            $rs->current_source_alias.q{.}.$c->request->params->{sort}
          }
       );
    }
