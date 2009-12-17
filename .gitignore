@@ -1,3 +1,4 @@
 *.swp
 Makefile
 *.gz
+Catalyst-TraitFor-Controller-DBIC-DoesPaging-*
