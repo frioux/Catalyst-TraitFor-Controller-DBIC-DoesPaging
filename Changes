@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.093510  2009-12-17 00:12:03 CST6CDT
        - Add multipk deletion
        - Add aliases to a lot of things that could have been ambiguous before
 
