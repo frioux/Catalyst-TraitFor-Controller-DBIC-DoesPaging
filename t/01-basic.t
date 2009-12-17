@@ -101,8 +101,8 @@ simple_deletion: {
 
 multipk_deletion: {
    cmp_bag [map $_->id, $schema->resultset('MultiPk')->all] => [1..9], 'values are not deleted';
-   my $data = from_json(get('/test_simple_deletion_multipk?'.join q{&}, map "to_delete=$_", qw{awesome,bitchin cool,bad tubular,righeous}));
-   cmp_bag $data => [qw{awesome,bitchin cool,bad tubular,righeous}], 'values appear to be deleted';
+   my $data = from_json(get('/test_simple_deletion_multipk?'.join q{&}, map "to_delete=$_", ( 'awesome,bitchin','cool,bad','tubular,righeous' )));
+   cmp_bag $data => [ 'awesome,bitchin','cool,bad','tubular,righeous' ], 'values appear to be deleted';
    cmp_bag [map $_->id, $schema->resultset('MultiPk')->all] => [4..9], 'values are deleted';
 }
 
