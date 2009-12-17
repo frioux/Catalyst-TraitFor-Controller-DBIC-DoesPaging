@@ -53,9 +53,24 @@ sub sort {
 
 sub simple_deletion {
    my ($self, $c, $rs) = @_;
+
    # param names should be configurable
    my $to_delete = $c->request->params->{to_delete} or croak 'Required cgi parameter (to_delete) undefined!';
-   $rs->search({ id => { -in => $to_delete } })->delete();
+   my @pks = map $rs->current_source_alias.q{.}.$_, $rs->result_source->primary_columns;
+
+   my $expression;
+   if (@pks == 1) {
+      $expression = { $pks[0] => { -in => $to_delete } };
+   } else {
+      $expression = [
+	 map {
+	    my %hash;
+	    @hash{@pks} = split /,/, $_;
+	    \%hash;
+	 } @{$to_delete}
+      ];
+   }
+   $rs->search($expression)->delete();
    return $to_delete;
 }
 
@@ -66,7 +81,8 @@ sub simple_search {
    foreach ( keys %{ $c->request->params } ) {
       if ( $c->request->params->{$_} and not $skips{$_} ) {
          # should be configurable
-         $searches->{$_} = { like => [map "%$_%", $c->request->param($_)] };
+         $searches->{$rs->current_source_alias.q{.}.$_} =
+	    { like => [map "%$_%", $c->request->param($_)] };
       }
    }
 

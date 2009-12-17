@@ -54,6 +54,12 @@ sub test_simple_deletion :Local {
     $c->stash->{js} = $self->simple_deletion($c, $c->model('DB::Stations'));
 }
 
+sub test_simple_deletion_multipk :Local {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{js} = $self->simple_deletion($c, $c->model('DB::MultiPk'));
+}
+
 sub default :Path {
     my ( $self, $c ) = @_;
     $c->response->body( 'Page not found' );

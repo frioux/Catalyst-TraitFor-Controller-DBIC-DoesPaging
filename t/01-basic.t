@@ -25,6 +25,19 @@ $schema->populate(Stations => [
    [qw{9  wicked  out       }],
 ]);
 
+$schema->populate(MultiPk => [
+   [qw{id bill    ted       }],
+   [qw{1  awesome bitchin   }],
+   [qw{2  cool    bad       }],
+   [qw{3  tubular righeous  }],
+   [qw{4  rad     totally   }],
+   [qw{5  sweet   beesknees }],
+   [qw{6  gnarly  killer    }],
+   [qw{7  hot     legit     }],
+   [qw{8  groovy  station   }],
+   [qw{9  wicked  out       }],
+]);
+
 page_and_sort: {
    my $data = from_json(get('/test_page_and_sort?limit=3&dir=asc&sort=bill'));
    cmp_ok scalar @{$data}, '<=', 3, 'page_and_sort correctly pages';
@@ -84,6 +97,13 @@ simple_deletion: {
    my $data = from_json(get('/test_simple_deletion?'.join q{&}, map "to_delete=$_", 1,2,3 ));
    cmp_bag $data => [1,2,3], 'values appear to be deleted';
    cmp_bag [map $_->id, $schema->resultset('Stations')->all] => [4..9], 'values are deleted';
+}
+
+multipk_deletion: {
+   cmp_bag [map $_->id, $schema->resultset('MultiPk')->all] => [1..9], 'values are not deleted';
+   my $data = from_json(get('/test_simple_deletion_multipk?'.join q{&}, map "to_delete=$_", qw{awesome,bitchin cool,bad tubular,righeous}));
+   cmp_bag $data => [qw{awesome,bitchin cool,bad tubular,righeous}], 'values appear to be deleted';
+   cmp_bag [map $_->id, $schema->resultset('MultiPk')->all] => [4..9], 'values are deleted';
 }
 
 done_testing;
