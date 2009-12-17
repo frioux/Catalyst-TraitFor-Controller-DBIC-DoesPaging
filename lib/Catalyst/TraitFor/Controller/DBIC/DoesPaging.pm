@@ -281,7 +281,8 @@ Deletes from the passed in resultset based on the following CGI parameter:
  to_delete - values of the ids of items to delete
 
 This is the only method that does not return a ResultSet.  Instead it returns an
-arrayref of the id's that it deleted.
+arrayref of the id's that it deleted.  If the ResultSet has has a multipk this will
+expect each tuple of PK's to be separated by commas.
 
 Note that this method uses the $rs->delete method, as opposed to $rs->delete_all
 
