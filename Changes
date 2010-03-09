@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+       - Change Version schema away from RJBS versioning
+       - Fix tests to not use keywords for labels
 
 0.093510  2009-12-17 00:12:03 CST6CDT
        - Add multipk deletion
