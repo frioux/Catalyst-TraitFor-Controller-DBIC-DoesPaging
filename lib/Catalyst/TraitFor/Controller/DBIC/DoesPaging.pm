@@ -132,9 +132,7 @@ sub simple_sort {
  sub people {
     my ($self, $c) = @_;
     my $people = $self->page_and_sort(
-       $self->simple_search(
-          $self->model('DB::People');
-       )
+       $self->search( $self->model('DB::People') )
     );
     # ...
  }
@@ -155,7 +153,7 @@ return a ResultSet.
 
  my $result = $self->page_and_sort($c, $c->model('DB::Foo'));
 
-This is a helper method that will first C<sort> your data and then C<paginate>
+This is a helper method that will first L</sort> your data and then L</paginate>
 it.
 
 =head2 paginate
@@ -171,8 +169,9 @@ Paginates the passed in resultset based on the following CGI parameters:
 
  my $searched_rs = $self->search($c, $c->model('DB::Foo'));
 
-Calls the controller_search method on the passed in resultset with all of the
-CGI parameters.  I like to have this look something like the following:
+If the C<$resultset> has a C<controller_search> method it will call that method
+on the passed in resultset with all of the CGI parameters.  I like to have this
+method look something like the following:
 
  # Base search dispatcher, defined in MyApp::Schema::ResultSet
  sub _build_search {
@@ -186,8 +185,8 @@ CGI parameters.  I like to have this look something like the following:
     foreach ( keys %{$q} ) {
        if ( my $fn = $dispatch_table->{$_} and $q->{$_} ) {
           my ( $tmp_search, $tmp_meta ) = $fn->( $q->{$_} );
-          %search = ( %search, %{$tmp_search} );
-          %meta   = ( %meta,   %{$tmp_meta} );
+          %search = ( %search, %{$tmp_search||{}} );
+          %meta   = ( %meta,   %{$tmp_meta||{}} );
        }
     }
 
@@ -199,39 +198,26 @@ CGI parameters.  I like to have this look something like the following:
     my $self   = shift;
     my $params = shift;
     return $self->_build_search({
-          status => sub {
-             return { 'repair_order_status' => shift }, {};
-          },
-          part_id => sub {
-             return {
-                'lineitems.part_id' => { -like => q{%}.shift( @_ ).q{%} }
-             }, { join => 'lineitems' };
-          },
-          serial => sub {
-             return {
-                'lineitems.serial' => { -like => q{%}.shift( @_ ).q{%} }
-             }, { join => 'lineitems' };
-          },
-          id => sub {
-             return { 'id' => shift }, {};
-          },
-          customer_id => sub {
-             return { 'customer_id' => shift }, {};
-          },
-          repair_order_id => sub {
-             return {
-                'repair_order_id' => { -like => q{%}.shift( @_ ).q{%} }
-             }, {};
-          },
-       },$params
-    );
+       status => sub {
+          return { 'repair_order_status' => shift }, {};
+       },
+       part_id => sub {
+          return {
+             'lineitems.part_id' => { -like => q{%}.shift( @_ ).q{%} }
+          }, { join => 'lineitems' };
+       },
+    },$params);
  }
+
+If the C<controller_search> method does not exist, this method will call
+L</simple_search> instead.
 
 =head2 sort
 
  my $result = $self->sort($c, $c->model('DB::Foo'));
 
-Exactly the same as search, except calls controller_sort.  Here is how I use it:
+Exactly the same as search, except calls C<controller_sort> or L</simple_sort>.
+Here is how I use it:
 
  # Base sort dispatcher, defined in MyApp::Schema::ResultSet
  sub _build_sort {
@@ -248,12 +234,12 @@ Exactly the same as search, except calls controller_sort.  Here is how I use it:
 
     if ( my $fn = $dispatch_table->{$sort} ) {
        my ( $tmp_search, $tmp_meta ) = $fn->( $direction );
-       %search = ( %search, %{$tmp_search} );
-       %meta   = ( %meta,   %{$tmp_meta} );
+       %search = ( %search, %{$tmp_search||{}} );
+       %meta   = ( %meta,   %{$tmp_meta||{}} );
     } elsif ( $sort && $direction ) {
        my ( $tmp_search, $tmp_meta ) = $default->( $sort, $direction );
-       %search = ( %search, %{$tmp_search} );
-       %meta   = ( %meta,   %{$tmp_meta} );
+       %search = ( %search, %{$tmp_search||{}} );
+       %meta   = ( %meta,   %{$tmp_meta||{}} );
     }
 
     return $self->search(\%search, \%meta);
@@ -264,20 +250,19 @@ Exactly the same as search, except calls controller_sort.  Here is how I use it:
     my $self = shift;
     my $params = shift;
     return $self->_build_sort({
-         first_name => sub {
-            my $direction = shift;
-            return {}, {
-               order_by => { "-$direction" => [qw{last_name first_name}] },
-            };
-         },
-       }, sub {
-      my $param = shift;
-      my $direction = shift;
-      return {}, {
-         order_by => { "-$direction" => $param },
-      };
-       },$params
-    );
+       first_name => sub {
+          my $direction = shift;
+          return {}, {
+             order_by => { "-$direction" => [qw{last_name first_name}] },
+          };
+       },
+    }, sub {
+       my $param = shift;
+       my $direction = shift;
+       return {}, {
+          order_by => { "-$direction" => $param },
+       };
+    },$params);
  }
 
 =head2 simple_deletion
