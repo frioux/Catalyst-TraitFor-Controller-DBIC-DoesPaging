@@ -20,7 +20,7 @@ use Carp 'croak';
 
 sub page_and_sort {
    my ($self, $c, $rs) = @_;
-   $rs = $self->simple_sort($c, $rs);
+   $rs = $self->sort($c, $rs);
    return $self->paginate($c, $rs);
 }
 
@@ -42,13 +42,21 @@ sub paginate {
 sub search {
    my ($self, $c, $rs) = @_;
    my $q = $c->request->params;
-   return $rs->controller_search($q);
+   if ($rs->can('controller_search')) {
+      return $rs->controller_search($q);
+   } else {
+      return $self->simple_search($c, $rs);
+   }
 }
 
 sub sort {
    my ($self, $c, $rs) = @_;
    my $q = $c->request->params;
-   return $rs->controller_sort($q);
+   if ($rs->can('controller_sort')) {
+      return $rs->controller_sort($q);
+   } else {
+      return $self->simple_sort($c, $rs);
+   }
 }
 
 sub simple_deletion {
@@ -63,11 +71,11 @@ sub simple_deletion {
       $expression = { $pks[0] => { -in => $to_delete } };
    } else {
       $expression = [
-	 map {
-	    my %hash;
-	    @hash{@pks} = split /,/, $_;
-	    \%hash;
-	 } @{$to_delete}
+         map {
+            my %hash;
+            @hash{@pks} = split /,/, $_;
+            \%hash;
+         } @{$to_delete}
       ];
    }
    $rs->search($expression)->delete();
@@ -82,7 +90,7 @@ sub simple_search {
       if ( $c->request->params->{$_} and not $skips{$_} ) {
          # should be configurable
          $searches->{$rs->current_source_alias.q{.}.$_} =
-	    { like => [map "%$_%", $c->request->param($_)] };
+            { like => [map "%$_%", $c->request->param($_)] };
       }
    }
 
