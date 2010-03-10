@@ -1,6 +1,10 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+       - search and sort now call simple_search and simple_sort
+         if resultset controller methods are undefined
+
+1.00000   2010-03-08 20:51:00 CST6CDT
        - Change Version schema away from RJBS versioning
        - Fix tests to not use keywords for labels
 
