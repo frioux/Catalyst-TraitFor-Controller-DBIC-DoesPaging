@@ -277,15 +277,17 @@ This is the only method that does not return a ResultSet.  Instead it returns an
 arrayref of the id's that it deleted.  If the ResultSet has has a multipk this will
 expect each tuple of PK's to be separated by commas.
 
-Note that this method uses the $rs->delete method, as opposed to $rs->delete_all
+Note that this method uses the C<< $rs->delete >> method, as opposed to
+C<< $rs->delete_all >>
 
 =head2 simple_search
 
  my $searched_rs = $self->simple_search($c, $c->model('DB::Foo'));
 
-Searches rs based on all fields in the request, except for fields listed in
-C<ignored_params>.  Searches with fieldname => { -like => "%$value%" }. If there are
-multiple values for a CGI parameter it will use all values via an C<or>.
+Searches the resultset based on all fields in the request, except for fields
+listed in C<ignored_params>.  Searches with
+C<< $fieldname => { -like => "%$value%" } >>.  If there are multiple values for
+a CGI parameter it will use all values via an C<or>.
 
 =head2 simple_sort
 
