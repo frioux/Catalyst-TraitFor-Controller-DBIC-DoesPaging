@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+       - Put MetaYAML back in dist
 
 1.001000  2010-03-10 16:32:59 CST6CDT
        - search and sort now call simple_search and simple_sort
