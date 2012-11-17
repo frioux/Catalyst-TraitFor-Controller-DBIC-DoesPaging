@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+1.001001  2012-11-17 15:47:43 CST6CDT
        - Put MetaYAML back in dist
 
 1.001000  2010-03-10 16:32:59 CST6CDT
