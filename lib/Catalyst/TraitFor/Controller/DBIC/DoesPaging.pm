@@ -3,6 +3,7 @@ package Catalyst::TraitFor::Controller::DBIC::DoesPaging;
 # ABSTRACT: Helps you paginate, search, sort, and more easily using DBIx::Class
 
 use Moose::Role;
+use Web::Util::DBIC::Paging ':all' => { -prefix => '_' };
 
 has ignored_params => (
    is => 'ro',
@@ -16,107 +17,25 @@ has page_size => (
    default => 25,
 );
 
-use Carp 'croak';
-
 sub page_and_sort {
-   my ($self, $c, $rs) = @_;
-   $rs = $self->sort($c, $rs);
-   return $self->paginate($c, $rs);
+   _page_and_sort(c => $_[1], $_[2], { page_size => $_[0]->page_size })
 }
 
 sub paginate {
-   my ($self, $c, $resultset) = @_;
-   # param names should be configurable
-   my $rows = $c->request->params->{limit} || $self->page_size;
-   my $page =
-      $c->request->params->{start}
-      ? ( $c->request->params->{start} / $rows + 1 )
-      : 1;
-
-   return $resultset->search_rs( undef, {
-      rows => $rows,
-      page => $page
-   });
+   _paginate(c => $_[1], $_[2], { page_size => $_[0]->page_size })
 }
 
-sub search {
-   my ($self, $c, $rs) = @_;
-   my $q = $c->request->params;
-   if ($rs->can('controller_search')) {
-      return $rs->controller_search($q);
-   } else {
-      return $self->simple_search($c, $rs);
-   }
-}
+sub search { _search(c => $_[1], $_[2], { skip => $_[0]->ignored_params }) }
 
-sub sort {
-   my ($self, $c, $rs) = @_;
-   my $q = $c->request->params;
-   if ($rs->can('controller_sort')) {
-      return $rs->controller_sort($q);
-   } else {
-      return $self->simple_sort($c, $rs);
-   }
-}
+sub sort { _sort_rs(c => $_[1], $_[2]) }
 
-sub simple_deletion {
-   my ($self, $c, $rs) = @_;
-
-   # param names should be configurable
-   my $to_delete = $c->request->params->{to_delete} or croak 'Required cgi parameter (to_delete) undefined!';
-   my @pks = map $rs->current_source_alias.q{.}.$_, $rs->result_source->primary_columns;
-
-   my $expression;
-   if (@pks == 1) {
-      $expression = { $pks[0] => { -in => $to_delete } };
-   } else {
-      $expression = [
-         map {
-            my %hash;
-            @hash{@pks} = split /,/, $_;
-            \%hash;
-         } @{$to_delete}
-      ];
-   }
-   $rs->search($expression)->delete();
-   return $to_delete;
-}
+sub simple_deletion { _simple_deletion(c => $_[1], $_[2]) }
 
 sub simple_search {
-   my ($self, $c, $rs) = @_;
-   my %skips  = map { $_ => 1} @{$self->ignored_params};
-   my $searches = {};
-   foreach ( keys %{ $c->request->params } ) {
-      if ( $c->request->params->{$_} and not $skips{$_} ) {
-         # should be configurable
-         $searches->{$rs->current_source_alias.q{.}.$_} =
-            { like => [map "%$_%", $c->request->param($_)] };
-      }
-   }
-
-   my $rs_full = $rs->search($searches);
-
-   return $self->page_and_sort($c, $rs_full);
+   _simple_search(c => $_[1], $_[2], { skip => $_[0]->ignored_params });
 }
 
-sub simple_sort {
-   my ($self, $c, $rs) = @_;
-   my %order_by = (
-      order_by => [
-         map $rs->current_source_alias.q{.}.$_,
-         $rs->result_source->primary_columns
-      ]
-   );
-   if ( $c->request->params->{sort} ) {
-      %order_by = (
-         order_by => {
-            q{-}.$c->request->params->{dir} =>
-            $rs->current_source_alias.q{.}.$c->request->params->{sort}
-         }
-      );
-   }
-   return $rs->search_rs(undef, { %order_by });
-}
+sub simple_sort { _simple_sort(c => $_[1], $_[2]) }
 
 1;
 
@@ -313,6 +232,10 @@ ArrayRef of params that will be ignored in simple_search, defaults to:
  [qw{limit start sort dir _dc rm xaction}]
 
 =back
+
+=head1 SEE ALSO
+
+L<Web::Util::DBIC::Paging>, which this module is a thin wrapper around
 
 =head1 CREDITS
 
