@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+1.001003  2013-06-01 14:07:26 CST6CDT
        - Add missing dep
 
 1.001002  2013-05-31 23:45:39 CST6CDT
