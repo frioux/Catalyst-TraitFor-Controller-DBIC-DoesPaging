@@ -104,12 +104,11 @@ method look something like the following:
     foreach ( keys %{$q} ) {
        if ( my $fn = $dispatch_table->{$_} and $q->{$_} ) {
           my ( $tmp_search, $tmp_meta ) = $fn->( $q->{$_} );
-          %search = ( %search, %{$tmp_search||{}} );
-          %meta   = ( %meta,   %{$tmp_meta||{}} );
+	  $self = $self->search( $tmp_search, $tmp_meta );
        }
     }
 
-    return $self->search(\%search, \%meta);
+    return $self;
  }
 
  # search method in specific resultset
