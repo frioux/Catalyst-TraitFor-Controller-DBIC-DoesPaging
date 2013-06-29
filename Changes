@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+       - Modernize Examples in doc (Geoff Darling)
 
 1.001003  2013-06-01 14:07:26 CST6CDT
        - Add missing dep
