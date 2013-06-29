@@ -152,15 +152,13 @@ Here is how I use it:
 
     if ( my $fn = $dispatch_table->{$sort} ) {
        my ( $tmp_search, $tmp_meta ) = $fn->( $direction );
-       %search = ( %search, %{$tmp_search||{}} );
-       %meta   = ( %meta,   %{$tmp_meta||{}} );
+       $self = $self->search( $tmp_search, $tmp_meta );
     } elsif ( $sort && $direction ) {
        my ( $tmp_search, $tmp_meta ) = $default->( $sort, $direction );
-       %search = ( %search, %{$tmp_search||{}} );
-       %meta   = ( %meta,   %{$tmp_meta||{}} );
+       $self = $self->search( $tmp_search, $tmp_meta );
     }
 
-    return $self->search(\%search, \%meta);
+    return $self;
  }
 
  # sort method in specific resultset
