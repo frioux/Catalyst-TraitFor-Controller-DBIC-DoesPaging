@@ -70,14 +70,14 @@ return a ResultSet.
 
 =head2 page_and_sort
 
- my $result = $self->page_and_sort($c, $c->model('DB::Foo'));
+ my $result_rs  = $self->page_and_sort($c, $c->model('DB::Foo'));
 
 This is a helper method that will first L</sort> your data and then L</paginate>
 it.
 
 =head2 paginate
 
- my $result = $self->paginate($c, $c->model('DB::Foo'));
+ my $result_rs  = $self->paginate($c, $c->model('DB::Foo'));
 
 Paginates the passed in resultset based on the following CGI parameters:
 
@@ -127,7 +127,7 @@ L</simple_search> instead.
 
 =head2 sort
 
- my $result = $self->sort($c, $c->model('DB::Foo'));
+ my $result_rs  = $self->sort($c, $c->model('DB::Foo'));
 
 Exactly the same as search, except calls C<controller_sort> or L</simple_sort>.
 Here is how I use it:
