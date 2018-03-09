@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+1.001004  2018-03-09 15:17:49-06:00 America/Chicago
        - Modernize Examples in doc (Geoff Darling)
        - Consistent doc examples (wesm)
 
